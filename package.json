@@ -1,0 +1,23 @@
+{
+  "name": "pebble-time2-watchface",
+  "author": "MakeAwesomeHappen",
+  "version": "1.0.0",
+  "keywords": ["pebble-app"],
+  "private": true,
+  "dependencies": {},
+  "pebble": {
+    "displayName": "pebble-time2-watchface",
+    "uuid": "1daf6808-94ec-4df3-a5cb-6aa04eb08a74",
+    "sdkVersion": "3",
+    "enableMultiJS": true,
+    "targetPlatforms": [
+      "emery"
+    ],
+    "watchapp": {
+      "watchface": true
+    },
+    "resources": {
+      "media": []
+    }
+  }
+}
