@@ -33,7 +33,7 @@ static void prv_window_load(Window *window) {
   layer_add_child(window_layer, bitmap_layer_get_layer(s_background_layer));
 
   s_time_layer = text_layer_create(
-      GRect(0, (bounds.size.h / 2) - 40, bounds.size.w, 60));
+      GRect(0, 20, bounds.size.w, 60));
   text_layer_set_background_color(s_time_layer, GColorClear);
   text_layer_set_text_color(s_time_layer, GColorWhite);
   text_layer_set_font(s_time_layer,
@@ -42,7 +42,7 @@ static void prv_window_load(Window *window) {
   layer_add_child(window_layer, text_layer_get_layer(s_time_layer));
 
   s_date_layer = text_layer_create(
-      GRect(0, (bounds.size.h / 2) + 20, bounds.size.w, 30));
+      GRect(0, 80, bounds.size.w, 30));
   text_layer_set_background_color(s_date_layer, GColorClear);
   text_layer_set_text_color(s_date_layer, GColorWhite);
   text_layer_set_font(s_date_layer,
