@@ -3,6 +3,8 @@
 static Window *s_window;
 static TextLayer *s_time_layer;
 static TextLayer *s_date_layer;
+static BitmapLayer *s_background_layer;
+static GBitmap *s_background_bitmap;
 
 static void update_time(struct tm *tick_time) {
   static char s_time_buffer[8];
@@ -24,7 +26,11 @@ static void prv_window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
 
-  window_set_background_color(window, GColorBlack);
+  s_background_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BACKGROUND);
+  s_background_layer = bitmap_layer_create(bounds);
+  bitmap_layer_set_bitmap(s_background_layer, s_background_bitmap);
+  bitmap_layer_set_compositing_mode(s_background_layer, GCompOpSet);
+  layer_add_child(window_layer, bitmap_layer_get_layer(s_background_layer));
 
   s_time_layer = text_layer_create(
       GRect(0, (bounds.size.h / 2) - 40, bounds.size.w, 60));
@@ -52,6 +58,8 @@ static void prv_window_load(Window *window) {
 static void prv_window_unload(Window *window) {
   text_layer_destroy(s_time_layer);
   text_layer_destroy(s_date_layer);
+  bitmap_layer_destroy(s_background_layer);
+  gbitmap_destroy(s_background_bitmap);
 }
 
 static void prv_init(void) {
