@@ -13,6 +13,9 @@
     "targetPlatforms": [
       "emery"
     ],
+    "capabilities": [
+      "health"
+    ],
     "watchapp": {
       "watchface": true
     },
