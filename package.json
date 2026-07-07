@@ -13,11 +13,20 @@
     "targetPlatforms": [
       "emery"
     ],
+    "capabilities": [
+      "health"
+    ],
     "watchapp": {
       "watchface": true
     },
     "resources": {
-      "media": []
+      "media": [
+        {
+          "type": "bitmap",
+          "name": "IMAGE_BACKGROUND",
+          "file": "images/background.png"
+        }
+      ]
     }
   }
 }
