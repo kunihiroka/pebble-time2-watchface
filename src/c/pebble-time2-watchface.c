@@ -1,5 +1,14 @@
 #include <pebble.h>
 
+#define PERSIST_KEY_BG 1
+#define NUM_BACKGROUNDS 2
+#define SWIPE_MIN_DISTANCE 40
+
+static const uint32_t s_background_resources[NUM_BACKGROUNDS] = {
+  RESOURCE_ID_IMAGE_BACKGROUND,
+  RESOURCE_ID_IMAGE_BACKGROUND2,
+};
+
 static Window *s_window;
 static TextLayer *s_time_layer;
 static TextLayer *s_date_layer;
@@ -7,6 +16,23 @@ static TextLayer *s_battery_layer;
 static TextLayer *s_steps_layer;
 static BitmapLayer *s_background_layer;
 static GBitmap *s_background_bitmap;
+static int s_bg_index;
+static int16_t s_touch_start_x;
+static int16_t s_touch_start_y;
+
+static void set_background(int index) {
+  s_bg_index = (index % NUM_BACKGROUNDS + NUM_BACKGROUNDS) % NUM_BACKGROUNDS;
+
+  if (s_background_bitmap) {
+    gbitmap_destroy(s_background_bitmap);
+  }
+  s_background_bitmap =
+      gbitmap_create_with_resource(s_background_resources[s_bg_index]);
+  bitmap_layer_set_bitmap(s_background_layer, s_background_bitmap);
+  layer_mark_dirty(bitmap_layer_get_layer(s_background_layer));
+
+  persist_write_int(PERSIST_KEY_BG, s_bg_index);
+}
 
 static void update_time(struct tm *tick_time) {
   static char s_time_buffer[8];
@@ -51,15 +77,37 @@ static void health_handler(HealthEventType event, void *context) {
   }
 }
 
+static void touch_handler(const TouchEvent *event, void *context) {
+  switch (event->type) {
+    case TouchEvent_Touchdown:
+      s_touch_start_x = event->x;
+      s_touch_start_y = event->y;
+      break;
+    case TouchEvent_Liftoff: {
+      int16_t dx = event->x - s_touch_start_x;
+      int16_t dy = event->y - s_touch_start_y;
+      // Vertical swipe: mostly-vertical motion past the distance threshold.
+      if (abs(dy) >= SWIPE_MIN_DISTANCE && abs(dy) > abs(dx)) {
+        set_background(dy < 0 ? s_bg_index + 1 : s_bg_index - 1);
+      }
+      break;
+    }
+    default:
+      break;
+  }
+}
+
 static void prv_window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
 
-  s_background_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BACKGROUND);
   s_background_layer = bitmap_layer_create(bounds);
-  bitmap_layer_set_bitmap(s_background_layer, s_background_bitmap);
   bitmap_layer_set_compositing_mode(s_background_layer, GCompOpSet);
   layer_add_child(window_layer, bitmap_layer_get_layer(s_background_layer));
+  int saved_bg = persist_exists(PERSIST_KEY_BG)
+                     ? persist_read_int(PERSIST_KEY_BG)
+                     : 0;
+  set_background(saved_bg);
 
   s_time_layer = text_layer_create(GRect(0, 20, 130, 60));
   text_layer_set_background_color(s_time_layer, GColorClear);
@@ -121,12 +169,14 @@ static void prv_init(void) {
   tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
   battery_state_service_subscribe(battery_handler);
   health_service_events_subscribe(health_handler, NULL);
+  touch_service_subscribe(touch_handler, NULL);
 }
 
 static void prv_deinit(void) {
   tick_timer_service_unsubscribe();
   battery_state_service_unsubscribe();
   health_service_events_unsubscribe();
+  touch_service_unsubscribe();
   window_destroy(s_window);
 }
 
