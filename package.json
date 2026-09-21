@@ -30,6 +30,26 @@
           "type": "bitmap",
           "name": "IMAGE_BACKGROUND2",
           "file": "images/background2.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_BACKGROUND3",
+          "file": "images/background3.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_BACKGROUND4",
+          "file": "images/background4.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_BACKGROUND5",
+          "file": "images/background5.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_BACKGROUND6",
+          "file": "images/background6.png"
         }
       ]
     }
