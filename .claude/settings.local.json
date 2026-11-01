@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git tag *)",
+      "Bash(git push *)",
+      "Bash(gh release create v1.3.0 --title 'v1.3.0 - Swipe to switch background' --notes ' *)",
+      "Bash(gh release *)"
+    ]
+  }
+}
